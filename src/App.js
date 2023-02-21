@@ -49,13 +49,20 @@ function App() {
       mainImage.applyFilters();
       canvas.requestRenderAll();
     }
+    function resetFilter() {
+      mainImage.filters = [];
+      mainImage.applyFilters();
+      canvas.requestRenderAll();
+    }
 
-    document.getElementById('btn').addEventListener('click', addFilter);
+    document.getElementById('apply').addEventListener('click', addFilter);
+    document.getElementById('reset').addEventListener('click', resetFilter);
   }, [sliderValue]);
 
   return (
     <div className="App">
-      <button id="btn">Apply Blend</button>
+      <button id="apply">Apply Blend</button>
+      <button id="reset">Reset</button>
       <Slider />
       <canvas className="canvas" id="blend"></canvas>
     </div>

@@ -1,28 +1,41 @@
 import { fabric } from 'fabric';
-import { useEffect, useRef, useState } from 'react';
-import playerImage from './player.jpeg';
-import textureImage from './texture.png';
+import { useEffect, useState } from 'react';
+import player from './player.jpeg';
+import texture from './texture.png';
 import './App.css';
 
 function App() {
   const [sliderValue, setSlide] = useState(0.5);
   const [fabricCanvas, setFabricCanvas] = useState(null);
-  const texture = useRef();
-  const player = useRef();
+
   useEffect(() => {
     setFabricCanvas(initFabric());
   }, []);
 
   useEffect(() => {
     if (fabricCanvas) {
-      fabricCanvas.add(
-        new fabric.Image(player.current, { scaleX: 0.2, scaleY: 0.2 }),
-        new fabric.Image(texture.current, {
-          scaleX: 0.2,
-          scaleY: 0.2,
-          left: 400,
-          opacity: 0.2,
-        })
+      fabric.Image.fromURL(
+        player,
+        function (img) {
+          img.set({ width: 1904, height: 1270, scaleX: 0.2, scaleY: 0.2 });
+          fabricCanvas.add(img);
+        },
+        { crossOrigin: 'annonymous' }
+      );
+
+      fabric.Image.fromURL(
+        texture,
+        function (img) {
+          img.set({
+            width: 566,
+            height: 802,
+            scaleX: 0.9,
+            scaleY: 0.9,
+            left: 400,
+          });
+          fabricCanvas.add(img);
+        },
+        { crossOrigin: 'annonymous' }
       );
     }
   }, [fabricCanvas]);
@@ -35,19 +48,20 @@ function App() {
     });
   };
 
+  console.log(fabricCanvas);
+
   const handleChange = (e) => {
+    console.log(e.target.value);
     setSlide(+e.target.value);
   };
 
   const addFilter = () => {
-    let fabricTexture = new fabric.Image(texture.current, { opacity: 0.2 });
-    fabricCanvas._objects[0].filters = [];
     const filter = new fabric.Image.filters.BlendImage({
-      image: fabricTexture,
+      image: fabricCanvas._objects[1],
       mode: 'multiply',
-      alpha: sliderValue,
+      alpha: 10,
     });
-
+    fabricCanvas._objects[0].filters = [];
     fabricCanvas._objects[0].filters.push(filter);
     fabricCanvas._objects[0].applyFilters();
     fabricCanvas.requestRenderAll();
@@ -70,10 +84,9 @@ function App() {
         step="0.1"
         onChange={handleChange}
         value={sliderValue}
+        // onBlur={handleBlur}
       /> */}
       <canvas className="canvas" id="blend"></canvas>
-      <img src={playerImage} alt="asd" ref={player} />
-      <img src={textureImage} alt="asd" ref={texture} />
     </div>
   );
 }

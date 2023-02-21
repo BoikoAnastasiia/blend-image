@@ -2,11 +2,22 @@ import { fabric } from 'fabric';
 import { useEffect, useState } from 'react';
 import player from './player.jpeg';
 import texture from './texture.png';
-import { useSlider } from './useSlider';
 import './App.css';
 
 function App() {
-  const [sliderValue, Slider] = useSlider(0.5);
+  const [sliderValue, setSlide] = useState(0.5);
+
+  const handleChange = (e) => {
+    console.log(e.target.value);
+    setSlide(e.target.value);
+  };
+
+  const handleBlur = (e) => {
+    const { value, name } = e.target;
+    if (e.target.value == '') {
+      setSlide(name);
+    }
+  };
 
   useEffect(() => {
     const canvas = new fabric.Canvas('blend', {
@@ -57,13 +68,21 @@ function App() {
 
     document.getElementById('apply').addEventListener('click', addFilter);
     document.getElementById('reset').addEventListener('click', resetFilter);
+    console.log(object);
   }, [sliderValue]);
 
   return (
     <div className="App">
       <button id="apply">Apply Blend</button>
       <button id="reset">Reset</button>
-      <Slider />
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
       <canvas className="canvas" id="blend"></canvas>
     </div>
   );
